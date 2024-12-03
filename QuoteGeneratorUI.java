@@ -184,3 +184,9 @@ public class QuoteGeneratorUI extends Application implements Serializable {
                 loginButton,
                 registerButton
         );
+
+        StackPane stackPane = new StackPane();
+        stackPane.getChildren().addAll(backgroundImageView, loginLayout);
+
+        return new Scene(stackPane, 950, 650);
+    }
