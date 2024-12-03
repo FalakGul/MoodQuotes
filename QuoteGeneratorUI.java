@@ -495,3 +495,102 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             System.err.println("Error loading image: " + imagePath);
         }
     }
+
+    private static final String COHERE_API_KEY = "API_KEY";  // Replace with your actual API key
+    private static final String COHERE_API_URL = "API_URL";  // Cohere API URL
+
+    // Method to extract the generated quote from the Cohere API response
+    private String parseGeneratedQuote(String response) {
+        try {
+            // Locate the "text" field in the response
+            String startMarker = "\"text\":\"";
+            int startIndex = response.indexOf(startMarker);
+            if (startIndex != -1) {
+                // Extract everything after "text":"
+                int textStartIndex = startIndex + startMarker.length();
+                int textEndIndex = response.indexOf("\",", textStartIndex); // Find the end of the "text" field
+                if (textEndIndex != -1) {
+                    // Extract the raw text
+                    String rawText = response.substring(textStartIndex, textEndIndex);
+
+                    // Clean up the text
+                    rawText = rawText.replace("\\n", "\n").replace("\\\"", "\"").trim(); // Handle newlines and escaped quotes
+
+                    // Split by lines and return the first meaningful quote
+                    String[] quotes = rawText.split("\n"); // Split by newlines
+                    for (String quote : quotes) {
+                        quote = quote.trim();
+                        if (!quote.isEmpty()) {
+                            return quote;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.err.println("Error parsing response: " + e.getMessage());
+        }
+        return null; // Return null if no valid quote is found
+    }
+
+
+    // Method to fetch the quote from Cohere API
+    private void fetchQuoteFromCohere() {
+        OkHttpClient client = new OkHttpClient();
+        String userMood = getUserMood();
+
+        if (userMood == null || userMood.isEmpty()) {
+            showAlert("Input Required", "Please enter your mood to get a personalized quote.");
+            return;
+        }
+
+        String prompt = "Provide a short, motivational quote for someone feeling " + userMood + ".";
+        System.out.println("Mood-based prompt: " + prompt);
+
+        // Update the background image based on the user's mood
+        updateBackgroundImage(userMood);
+
+        // Create the request body with the mood-based prompt
+        String requestBody = "{"
+                + "\"prompt\": \"" + prompt + "\","
+                + "\"max_tokens\": 50,"
+                + "\"temperature\": 0.7"
+                + "}";
+
+        RequestBody body = RequestBody.create(
+                requestBody,
+                MediaType.parse("application/json")
+        );
+
+        Request request = new Request.Builder()
+                .url(COHERE_API_URL)
+                .header("Authorization", "Bearer " + COHERE_API_KEY)
+                .post(body)
+                .build();
+
+        System.out.println("Sending request to Cohere...");
+
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String result = response.body().string();
+                System.out.println("Response from Cohere: " + result);
+
+                // Extract the generated quote from the API response
+                String generatedQuote = parseGeneratedQuote(result);
+
+                if (generatedQuote != null) {
+                    System.out.println("Generated Quote: " + generatedQuote);
+                    // Assuming `quoteText` is a UI element like a TextView or similar
+                    quoteText.setText(generatedQuote); // Update the UI element with the quote
+                } else {
+                    System.err.println("Generated quote not found in the response.");
+                    showAlert("Error", "Failed to retrieve a quote from Cohere.");
+                }
+            } else {
+                System.err.println("Request failed with status: " + response.code());
+                showAlert("Error", "Failed to connect to Cohere API.");
+            }
+        } catch (IOException e) {
+            System.err.println("Error during request: " + e.getMessage());
+            showAlert("Error", "An error occurred while fetching the quote.");
+        }
+    }
