@@ -47,8 +47,31 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             "You will face many defeats in life, but never let yourself be defeated. -Maya Angelou",
             "Go confidently in the direction of your dreams! Live the life you've imagined. -Henry David Thoreau"
     ));
+    private final Map<String, String> users = new HashMap<>();
+    private static final String USERS_FILE = "users.dat";
+    private static final String FAVORITES_FILE = "favorites.dat";
+    private static final String CUSTOM_QUOTES_FILE = "custom_quotes.dat";
+
+    private ImageView backgroundImageView;
 
     private final Map<String, String> users = new HashMap<>();
     private static final String USERS_FILE = "users.dat";
     private static final String FAVORITES_FILE = "favorites.dat";
     private static final String CUSTOM_QUOTES_FILE = "custom_quotes.dat";
+
+    private void registerUser(String username, String password) {
+        if (username.isEmpty() || password.isEmpty()) {
+            showAlert("Registration Failed", "Username and password cannot be empty.");
+            return;
+        }
+
+        if (users.containsKey(username)) {
+            showAlert("Registration Failed", "Username already exists.");
+        } else {
+            users.put(username, hashPassword(password));
+            userFavoriteQuotes.put(username, new ArrayList<>());
+            userCustomQuotes.put(username, new ArrayList<>());
+            saveAppData();
+            showAlert("Registration Successful", "You have been registered successfully. You can now log in.");
+        }
+    }
