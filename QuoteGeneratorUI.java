@@ -466,3 +466,32 @@ public class QuoteGeneratorUI extends Application implements Serializable {
         Optional<String> result = moodDialog.showAndWait();
         return result.orElse("Neutral");
     }
+
+    private void updateBackgroundImage(String mood) {
+        String imagePath;
+        switch (mood.toLowerCase()) {
+            case "happy":
+                imagePath = "happy.jpg";
+                break;
+            case "sad":
+                imagePath = "sad.jpg";
+                break;
+            case "motivated":
+                imagePath = "motivate.jpg";
+                break;
+            case "Cheerful":
+                imagePath = "cheerful.gif";
+                break;
+            case "loved":
+                imagePath = "loved.gif";
+                break;
+            default:
+                imagePath = "pg13.gif";
+                break;
+        }
+        try {
+            backgroundImageView.setImage(new Image(imagePath));
+        } catch (Exception e) {
+            System.err.println("Error loading image: " + imagePath);
+        }
+    }
