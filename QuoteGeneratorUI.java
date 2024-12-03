@@ -190,3 +190,34 @@ public class QuoteGeneratorUI extends Application implements Serializable {
 
         return new Scene(stackPane, 950, 650);
     }
+
+    private void generateRandomQuote() {
+        Random rand = new Random();
+        String randomQuote = quotesList.get(rand.nextInt(quotesList.size()));
+        quoteText.setText(randomQuote);
+    }
+
+
+    private void addCustomQuote() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Add Your Own Quote");
+        dialog.setHeaderText("Enter your custom quote:");
+        dialog.setContentText("Quote:");
+
+        dialog.showAndWait().ifPresent(customQuote -> {
+            if (customQuote.isEmpty()) {
+                showAlert("Error", "Quote cannot be empty.");
+                return;
+            }
+            // Ensure userCustomQuotes is updated for the logged-in user
+            List<String> customQuotes = userCustomQuotes.getOrDefault(loggedInUser, new ArrayList<>());
+            if (!customQuotes.contains(customQuote)) {
+                customQuotes.add(customQuote);
+                userCustomQuotes.put(loggedInUser, new ArrayList<>(customQuotes)); // Update the map
+                saveAppData();
+                showAlert("Quote Added", "Your custom quote has been added.");
+            } else {
+                showAlert("Duplicate Quote", "This quote already exists in your list.");
+            }
+        });
+    }
