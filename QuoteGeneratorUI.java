@@ -456,3 +456,13 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             }
         });
     }
+
+    private String getUserMood() {
+        TextInputDialog moodDialog = new TextInputDialog();
+        moodDialog.setTitle("Enter Your Mood");
+        moodDialog.setHeaderText("Please type your current mood (e.g., Happy, Sad, Motivated, etc.):");
+        moodDialog.setContentText("Mood:");
+
+        Optional<String> result = moodDialog.showAndWait();
+        return result.orElse("Neutral");
+    }
