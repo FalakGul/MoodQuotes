@@ -594,3 +594,26 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             showAlert("Error", "An error occurred while fetching the quote.");
         }
     }
+
+    private void loadAppData() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(USERS_FILE))) {
+            Map<String, String> loadedUsers = (Map<String, String>) ois.readObject();
+            users.putAll(loadedUsers);
+        } catch (Exception e) {
+            System.err.println("No existing users data found.");
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FAVORITES_FILE))) {
+            Map<String, ArrayList<String>> loadedFavorites = (Map<String, ArrayList<String>>) ois.readObject();
+            userFavoriteQuotes.putAll(loadedFavorites);
+        } catch (Exception e) {
+            System.err.println("No existing favorites data found.");
+        }
+
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(CUSTOM_QUOTES_FILE))) {
+            Map<String, ArrayList<String>> loadedCustomQuotes = (Map<String, ArrayList<String>>) ois.readObject();
+            userCustomQuotes.putAll(loadedCustomQuotes);
+        } catch (Exception e) {
+            System.err.println("No existing custom quotes data found.");
+        }
+    }
