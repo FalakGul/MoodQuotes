@@ -328,3 +328,79 @@ public class QuoteGeneratorUI extends Application implements Serializable {
 
         return scene;
     }
+
+    private void showQuotes(String title, List<String> quotes) {
+        if (quotes == null || quotes.isEmpty()) {
+            showAlert(title, "No quotes available.");
+            return;
+        }
+
+        // Title of the quotes section
+        Text titleText = new Text(title);
+        titleText.setFont(Font.font("Arial", FontWeight.BOLD, 24));
+        titleText.setFill(Color.WHITE);
+        titleText.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 5, 0, 2, 2);");
+
+        // VBox for the quotes list
+        VBox quoteBox = new VBox(10); // Space between quotes
+        quoteBox.setAlignment(Pos.TOP_CENTER); // Center all quotes
+        quoteBox.setPadding(new Insets(10, 20, 10, 20)); // Padding around the quotes section
+
+        for (String quote : quotes) {
+            // Display each quote with Edit and Delete buttons
+            HBox quoteWithButtons = new HBox(15); // Increased spacing between quote and buttons
+            quoteWithButtons.setAlignment(Pos.CENTER_LEFT);
+            quoteWithButtons.setPadding(new Insets(5, 10, 5, 10)); // Padding around each quote item
+
+            // Quote Text styling
+            Text quoteText = new Text(quote);
+            quoteText.setFont(Font.font("Georgia", 17));
+            quoteText.setFill(Color.NAVY);
+            quoteText.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 5, 0, 2, 2);");
+            quoteText.setWrappingWidth(500); // Ensures long quotes are wrapped neatly
+
+            // Edit Button
+            Button editButton = new Button("Edit");
+            styleButton(editButton, "#4CAF50"); // Green color for edit button
+
+            // Delete Button
+            Button deleteButton = new Button("Delete");
+            styleButton(deleteButton, "#E53935"); // Red color for delete button
+
+            // Action to edit a quote
+            editButton.setOnAction(e -> editQuote(quote));
+
+            // Action to delete a quote
+            deleteButton.setOnAction(e -> deleteQuote(quote));
+
+            quoteWithButtons.getChildren().addAll(quoteText, editButton, deleteButton);
+            quoteBox.getChildren().add(quoteWithButtons);
+        }
+
+        // ScrollPane for quotes to allow scrolling if there are many quotes
+        ScrollPane scrollPane = new ScrollPane(quoteBox);
+        scrollPane.setFitToWidth(true); // Ensures it fits within the screen width
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS); // Always show vertical scrollbar
+
+        // Create a close button (X button)
+        Button closeButton = new Button("X");
+        closeButton.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        closeButton.setOnAction(e -> returnToShowQuoteScreen()); // Action to return to the showQuoteScreen
+
+        // StackPane to hold the title, quotes, and close button
+        StackPane stackPane = new StackPane();
+        stackPane.setStyle("-fx-background-color: #2C3E50;"); // Set background color
+        stackPane.getChildren().addAll(scrollPane, closeButton);
+
+        // Set the position of the close button (top-right corner)
+        StackPane.setAlignment(closeButton, Pos.TOP_RIGHT);
+
+        // VBox for the main layout with title and quotes content
+        VBox mainLayout = new VBox(20, titleText, stackPane);
+        mainLayout.setAlignment(Pos.TOP_CENTER);
+        mainLayout.setStyle("-fx-background-color: #34495E; -fx-padding: 20px;");
+
+        // Create scene
+        Scene scene = new Scene(mainLayout, 800, 600);
+        primaryStage.setScene(scene);
+    }
