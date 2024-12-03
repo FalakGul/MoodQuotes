@@ -103,3 +103,84 @@ public class QuoteGeneratorUI extends Application implements Serializable {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private Scene createLoginScene() {
+        TextField usernameField = new TextField();
+        PasswordField passwordField = new PasswordField();
+
+        usernameField.setMaxWidth(150);
+        passwordField.setMaxWidth(150);
+
+        Button loginButton = new Button("Login");
+        styleButton(loginButton, "#4CAF50");
+
+        Button registerButton = new Button("Register");
+        styleButton(registerButton, "#008CBA");
+
+        usernameField.setPromptText("Enter your username");
+        passwordField.setPromptText("Enter your password");
+
+
+        // Handle 'Enter' key for login (when in either field)
+        usernameField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.SHIFT) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                loginUser(username, password);
+            }
+        });
+
+        passwordField.setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String username = usernameField.getText();
+                String password = passwordField.getText();
+                loginUser(username, password);
+            }
+        });
+
+        // Handle down arrow key to move focus to passwordField
+        usernameField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.DOWN) {
+                passwordField.requestFocus();
+            }
+        });
+
+        // Handle up arrow key to move focus to usernameField
+        passwordField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.UP) {
+                usernameField.requestFocus();
+            }
+        });
+
+        Image backgroundImage = new Image("pg15.gif"); // name of image
+        backgroundImageView = new ImageView(backgroundImage);
+        backgroundImageView.setFitWidth(2000);
+        backgroundImageView.setFitHeight(1500);
+        backgroundImageView.setPreserveRatio(true);
+
+        loginButton.setOnAction(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            loginUser(username, password);
+        });
+
+        registerButton.setOnAction(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+            registerUser(username, password);
+        });
+
+        VBox loginLayout = new VBox(20);
+        loginLayout.setAlignment(Pos.CENTER);
+        loginLayout.getChildren().addAll(
+                new Text("Welcome to the MoodQuotes!") {{
+                    setFill(Color.NAVY);
+                    setFont(Font.font("Arial", 32));
+                    setFont(Font.font("Arial", FontWeight.BOLD, 26));  // Set font to bold
+                    setEffect(new DropShadow(20, Color.WHITE));  // Apply a drop shadow effect
+                }},
+                usernameField,
+                passwordField,
+                loginButton,
+                registerButton
+        );
