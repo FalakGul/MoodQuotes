@@ -221,3 +221,110 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             }
         });
     }
+
+    private Scene showQuoteScreen() {
+        generateRandomQuote();
+
+
+        // Style the quote text
+        quoteText.setFont(Font.font("Georgia", FontWeight.BOLD, 22));
+        quoteText.setFill(Color.WHITE);
+        quoteText.setStyle("-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.75), 4, 0, 2, 2);");
+        quoteText.setWrappingWidth(600);
+
+        // Buttons
+        Button randomQuoteButton = new Button("Get Random Quote");
+        styleButton(randomQuoteButton, "#FF9800");
+
+        Button addToFavoriteButton = new Button("Add to Favorite");
+        styleButton(addToFavoriteButton, "#4CAF50");
+
+        Button showMyQuotesButton = new Button("Show My Quotes");
+        styleButton(showMyQuotesButton, "#008CBA");
+
+        Button showFavoritesButton = new Button("Show Favorites");
+        styleButton(showFavoritesButton, "#9C27B0");
+
+        Button toggleImageButton = new Button("Change Background");
+        styleButton(toggleImageButton, "#9C27B0");
+
+        Button addQuoteButton = new Button("Add Quote");
+        styleButton(addQuoteButton, "#8BC34A");
+
+        Button moodQuoteButton = new Button("Get Mood Quote");
+        styleButton(moodQuoteButton, "#FF5722");
+
+        Button logoutButton = new Button("Logout");
+        styleButton(logoutButton, "#E53935"); // Red for logout
+        logoutButton.setOnAction(e -> {
+            // Logic for logout (e.g., return to login screen)
+            showAlert("Logout", "You have been logged out.");
+            // Example: Redirect to a login screen (placeholder code)
+            Stage stage = (Stage) logoutButton.getScene().getWindow();
+            stage.setScene(createLoginScene()); // Assume `showLoginScreen` returns the login scene
+        });
+
+        addToFavoriteButton.setOnAction(e -> {
+            String quote = quoteText.getText();
+            if (!userFavoriteQuotes.get(loggedInUser).contains(quote)) {
+                userFavoriteQuotes.get(loggedInUser).add(quote);
+                saveAppData();
+                showAlert("Favorite Added", "Quote added to favorites.");
+            } else {
+                showAlert("Duplicate Favorite", "This quote is already in your favorites.");
+            }
+        });
+
+        // Attach correct actions to the buttons in `showQuoteScreen`:
+        showMyQuotesButton.setOnAction(e -> {
+            List<String> customQuotes = userCustomQuotes.getOrDefault(loggedInUser, new ArrayList<>());
+            showQuotes("Your Custom Quotes", customQuotes);
+        });
+
+
+
+        randomQuoteButton.setOnAction(e -> generateRandomQuote());
+        addQuoteButton.setOnAction(e -> addCustomQuote());
+        moodQuoteButton.setOnAction(e -> fetchQuoteFromCohere());
+        showMyQuotesButton.setOnAction(e -> showQuotes("Your Custom Quotes", userCustomQuotes.get(loggedInUser)));
+        showFavoritesButton.setOnAction(e -> showQuotes("Your Favorite Quotes", userFavoriteQuotes.get(loggedInUser)));
+
+        logoutButton.setOnAction(e -> {
+            loggedInUser = null;
+            isLoggedIn = false;
+            primaryStage.setScene(createLoginScene());
+        });
+
+        // Layouts
+        VBox leftPane = new VBox(15, addQuoteButton, showMyQuotesButton);
+        leftPane.setAlignment(Pos.CENTER_LEFT);
+        leftPane.setPadding(new Insets(10));
+
+        VBox rightPane = new VBox(15, moodQuoteButton, showFavoritesButton);
+        rightPane.setAlignment(Pos.CENTER_RIGHT);
+        rightPane.setPadding(new Insets(10));
+
+        VBox centerPane = new VBox(20, quoteText, randomQuoteButton, addToFavoriteButton);
+        centerPane.setAlignment(Pos.CENTER);
+
+        HBox topPane = new HBox(logoutButton);
+        topPane.setAlignment(Pos.TOP_RIGHT);
+        topPane.setPadding(new Insets(10));
+
+
+        // Main layout
+        BorderPane mainLayout = new BorderPane();
+        mainLayout.setLeft(leftPane);
+        mainLayout.setRight(rightPane);
+        mainLayout.setCenter(centerPane);
+        mainLayout.setTop(topPane);
+
+        // Background
+        StackPane backgroundPane = new StackPane();
+        backgroundPane.getChildren().addAll(backgroundImageView, mainLayout);
+
+        // Scene
+        Scene scene = new Scene(backgroundPane, 950, 650);
+
+        return scene;
+    }
