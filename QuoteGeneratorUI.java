@@ -90,3 +90,16 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             showAlert("Login Failed", "Invalid username or password.");
         }
     }
+
+    private void styleButton(Button button, String color) {
+        button.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 15;");
+        button.setMinWidth(150);
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
