@@ -439,3 +439,20 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             }
         });
     }
+
+    private void deleteQuote(String quoteToDelete) {
+        // Confirm if the user wants to delete the quote
+        Alert deleteConfirmation = new Alert(Alert.AlertType.CONFIRMATION);
+        deleteConfirmation.setTitle("Delete Quote");
+        deleteConfirmation.setHeaderText("Are you sure you want to delete this quote?");
+        deleteConfirmation.setContentText("Quote: " + quoteToDelete);
+
+        deleteConfirmation.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                List<String> customQuotes = userCustomQuotes.get(loggedInUser);
+                customQuotes.remove(quoteToDelete);  // Remove the quote
+                saveAppData();  // Save changes to disk
+                showAlert("Quote Deleted", "Your quote has been deleted.");
+            }
+        });
+    }
