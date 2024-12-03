@@ -75,3 +75,18 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             showAlert("Registration Successful", "You have been registered successfully. You can now log in.");
         }
     }
+
+    private void loginUser(String username, String password) {
+        if (users.containsKey(username) && users.get(username).equals(hashPassword(password))) {
+            isLoggedIn = true;
+            loggedInUser = username;
+
+            // Initialize lists if not already present
+            userFavoriteQuotes.putIfAbsent(username, new ArrayList<>());
+            userCustomQuotes.putIfAbsent(username, new ArrayList<>());
+
+            primaryStage.setScene(showQuoteScreen());
+        } else {
+            showAlert("Login Failed", "Invalid username or password.");
+        }
+    }
