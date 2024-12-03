@@ -404,3 +404,38 @@ public class QuoteGeneratorUI extends Application implements Serializable {
         Scene scene = new Scene(mainLayout, 800, 600);
         primaryStage.setScene(scene);
     }
+
+    private void returnToShowQuoteScreen() {
+        // Assuming showQuoteScreen() method returns a Scene object for the main quotes screen
+        Scene showQuoteScene = showQuoteScreen();
+
+        // Switch to the showQuoteScreen
+        primaryStage.setScene(showQuoteScene);  // Assuming primaryStage is your main window
+        primaryStage.show();
+    }
+
+
+
+    private void editQuote(String oldQuote) {
+        // Show a dialog to edit the selected quote
+        TextInputDialog editDialog = new TextInputDialog(oldQuote);
+        editDialog.setTitle("Edit Quote");
+        editDialog.setHeaderText("Edit your custom quote:");
+        editDialog.setContentText("Quote:");
+
+        editDialog.showAndWait().ifPresent(newQuote -> {
+            if (!newQuote.isEmpty() && !newQuote.equals(oldQuote)) {
+                List<String> customQuotes = userCustomQuotes.get(loggedInUser);
+                int index = customQuotes.indexOf(oldQuote);
+                if (index != -1) {
+                    customQuotes.set(index, newQuote);  // Update the quote
+                    saveAppData();  // Save changes to disk
+                    showAlert("Quote Edited", "Your quote has been updated.");
+                }
+            } else if (newQuote.equals(oldQuote)) {
+                showAlert("No Change", "The quote is unchanged.");
+            } else {
+                showAlert("Error", "Quote cannot be empty.");
+            }
+        });
+    }
