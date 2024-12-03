@@ -617,3 +617,23 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             System.err.println("No existing custom quotes data found.");
         }
     }
+
+    private void saveAppData() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(USERS_FILE))) {
+            oos.writeObject(users);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FAVORITES_FILE))) {
+            oos.writeObject(userFavoriteQuotes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(CUSTOM_QUOTES_FILE))) {
+            oos.writeObject(userCustomQuotes);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
