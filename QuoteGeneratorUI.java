@@ -54,10 +54,22 @@ public class QuoteGeneratorUI extends Application implements Serializable {
 
     private ImageView backgroundImageView;
 
-    private final Map<String, String> users = new HashMap<>();
-    private static final String USERS_FILE = "users.dat";
-    private static final String FAVORITES_FILE = "favorites.dat";
-    private static final String CUSTOM_QUOTES_FILE = "custom_quotes.dat";
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+
+    @Override
+    public void start(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+        primaryStage.setTitle("Quote Generator");
+
+        loadAppData();
+
+        Scene loginScene = createLoginScene();
+        primaryStage.setScene(loginScene);
+        primaryStage.show();
+    }
 
     private void registerUser(String username, String password) {
         if (username.isEmpty() || password.isEmpty()) {
@@ -637,3 +649,18 @@ public class QuoteGeneratorUI extends Application implements Serializable {
             e.printStackTrace();
         }
     }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hashedBytes = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashedBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Error hashing password", e);
+        }
+    }
+}
